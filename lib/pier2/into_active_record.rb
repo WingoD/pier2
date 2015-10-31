@@ -1,3 +1,7 @@
+require 'active_record'
+require 'roo-xls'
+require 'roo'
+
 # module expects to be called in a rails framework where Active Record is already loaded and initialized and connected to the database
 module Pier2
   class IntoActiveRecord
@@ -5,6 +9,7 @@ module Pier2
       @id_column_name = "id"
       @required_column_names = []
       @protected_column_names = []
+      @immutable_columms = []
       @ar_class = nil
       @column_name_mapping = {}
       @error_on_protected_columns = true
@@ -21,6 +26,10 @@ module Pier2
 
     def protected_columns(protected_column_names)
       @protected_column_names = protected_column_names
+    end
+
+    def immutable_columms(immutable_columms)
+      @immutable_columms = immutable_columms
     end
 
     def ar_class(ar_class_object)
@@ -41,11 +50,12 @@ module Pier2
 
     def open_spreadsheet(file)
       # Basic functionality copied from http://railscasts.com/episodes/396-importing-csv-and-excel
-      case File.extname(file.original_filename)
-      when ".csv" then Roo::Csv.new(file.path,{})
-      when ".xls" then Roo::Excel.new(file.path, nil, :ignore)
-      when ".xlsx" then Roo::Excelx.new(file.path, nil, :ignore)
-      else raise "Unknown file type: #{file.original_filename}"
+      case File.extname(file)
+      when ".csv" then Roo::Csv.new(file,{})
+      when ".xls" then Roo::Excel.new(file)
+      when ".xlsx" then Roo::Excelx.new(file)
+      when ".ods" then Roo::OpenOffice.new(file)
+      else raise "Unknown file type: #{file}"
       end
     end 
 
@@ -57,6 +67,7 @@ module Pier2
 
     def import_file(filename)
       spreadsheet = open_spreadsheet(filename)
+      raise Pier2::TooManySheetsError, "Too many sheets" if spreadsheet.sheets.length > 1
 
       # Read the column names from the first row, then rename them based on the custom mapping
       header = map_column_names(spreadsheet.row(1))
@@ -70,7 +81,6 @@ module Pier2
 
       end
     end
-
   end
 end
 
