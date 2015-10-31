@@ -2,6 +2,8 @@
 
 Pier2 abstracts an importer to create dereived classes which import from a spreadsheet file (.xls, xlsx, etc (whatever roo supports)) and automatically imports into an existing ActiceRecord class.
 
+[![Code Climate](https://img.shields.io/codeclimate/github/wwalker/pier2.svg?style=flat-square)](https://codeclimate.com/github/wwalker/pier2) 
+
 ## Installation
 
 Add this line to your application's Gemfile:
