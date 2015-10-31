@@ -32,8 +32,9 @@ Create a new class
 require pier2
 class ImportInvoice < Pier2
   backend(Invoice)
-  required_columns = %w( customer_id, date, amount )
-  protected_columns = %w( balance )
+  required_columns(%w( customer_id, date, amount ))
+  protected_columns(%w( balance ))
+  column_name_mapping( { 'Given Name' => 'first_name', 'Sir Name' => 'last_name' } )
 end
 ```
 
