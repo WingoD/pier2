@@ -51,7 +51,7 @@ module Pier2
     def open_spreadsheet(file)
       # Basic functionality copied from http://railscasts.com/episodes/396-importing-csv-and-excel
       case File.extname(file)
-      when ".csv" then Roo::Csv.new(file,{})
+      when ".csv" then Roo::CSV.new(file,{})
       when ".xls" then Roo::Excel.new(file)
       when ".xlsx" then Roo::Excelx.new(file)
       when ".ods" then Roo::OpenOffice.new(file)
@@ -60,7 +60,7 @@ module Pier2
     end 
 
     def map_column_names(column_names)
-      return map column_names do |column_name|
+      return column_names.map do |column_name|
         @column_name_mapping[column_name] || column_name
       end
     end
@@ -76,7 +76,7 @@ module Pier2
       (2..spreadsheet.last_row).each do |i|
         row = Hash[[header, spreadsheet.row(i)].transpose]
         db_row = @ar_class.find_by_id(row["id"]) || @ar_class.new
-        db_row.attributes = row.to_hash.slice(*accessible_attributes)
+        db_row.attributes = row.to_hash.slice(*@ar_class.column_names)
         db_row.save!
 
       end
