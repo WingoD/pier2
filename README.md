@@ -31,10 +31,15 @@ Create a new class
 ```
 require pier2
 class ImportInvoice < Pier2
-  backend(Invoice)
-  required_columns(%w( customer_id, date, amount ))
-  protected_columns(%w( balance ))
-  column_name_mapping( { 'Given Name' => 'first_name', 'Sir Name' => 'last_name' } )
+  def initialize
+    super
+    ar_class(Invoice)
+    id_column("IdNum")
+    required_columns(%w(customer_id, date, amount))
+    protected_columns(%w( balance ))
+    immutable_columms(%w(customer_id))
+    column_name_mapping( { 'Given Name' => 'first_name', 'Sir Name' => 'last_name' } )
+  end
 end
 ```
 
