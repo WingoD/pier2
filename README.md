@@ -32,7 +32,7 @@ Create a new class
 
 ```
 require pier2
-class ImportInvoice < Pier2
+class ImportInvoice < Pier2::IntoActiveRecord
   def initialize
     super
     ar_class(Invoice)

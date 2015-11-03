@@ -12,6 +12,7 @@ module Pier2
       @immutable_columms = []
       @ar_class = nil
       @column_name_mapping = {}
+      @default_column_values = {}
       @error_on_protected_columns = true
       @overwrite_existing_records = false
     end
@@ -45,7 +46,11 @@ module Pier2
     end
 
     def column_name_mapping(column_name_hash)
-      @column_name_mapping.merge(column_name_hash)
+      @column_name_mapping.merge!(column_name_hash)
+    end
+
+    def default_column_values(default_value_hash)
+      @default_column_values.merge!(default_value_hash)
     end
 
     def open_spreadsheet(file)
@@ -74,8 +79,11 @@ module Pier2
 
       # Basic functionality copied from http://railscasts.com/episodes/396-importing-csv-and-excel
       (2..spreadsheet.last_row).each do |i|
+        defaults = @default_column_values
         row = Hash[[header, spreadsheet.row(i)].transpose]
+        row = defaults.merge(row)
         db_row = @ar_class.find_by_id(row["id"]) || @ar_class.new
+        puts @ar_class.column_names
         db_row.attributes = row.to_hash.slice(*@ar_class.column_names)
         db_row.save!
 
