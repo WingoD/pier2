@@ -93,7 +93,11 @@ module Pier2
           row = defaults.merge(row)
           @column_methods.each do |column|
             tmphash = {}
-            tmphash[column] = send(column ,row)
+            begin
+              tmphash[column] = send(column ,row)
+            rescue Exception => e
+              @errors << ActiveModel::Errors.new(self).add(column, "custom method failed")
+            end
             row = row.merge(tmphash)
           end
           db_row = @ar_class.find_by_id(row["id"]) || @ar_class.new
