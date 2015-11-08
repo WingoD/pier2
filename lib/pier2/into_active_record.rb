@@ -112,7 +112,7 @@ module Pier2
           end
         end
         return @errors
-      rescue Exception > e
+      rescue Exception => e
         Rails.logger.error(e.message)
         Rails.logger.error(e.backtrace.join("\n"))
         raise
