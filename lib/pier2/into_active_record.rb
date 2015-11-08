@@ -71,6 +71,7 @@ module Pier2
 
     def map_column_names(column_names)
       return column_names.map do |column_name|
+        column_name.strip!
         @column_name_mapping[column_name] || column_name
       end
     end
