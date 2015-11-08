@@ -92,8 +92,10 @@ module Pier2
         end
       end
 
-      rows.each do |row|
-        row.save!
+      if ! failed
+        rows.each do |row|
+          row.save!
+        end
       end
     end
   end
