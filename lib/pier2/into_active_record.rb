@@ -93,7 +93,7 @@ module Pier2
           row = defaults.merge(row)
           @column_methods.each do |column|
             tmphash = {}
-            tmphash[column] = send(column ,row))
+            tmphash[column] = send(column ,row)
             row = row.merge(tmphash)
           end
           db_row = @ar_class.find_by_id(row["id"]) || @ar_class.new
