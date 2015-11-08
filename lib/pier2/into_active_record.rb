@@ -76,41 +76,47 @@ module Pier2
     end
 
     def import_file(filename)
-      spreadsheet = open_spreadsheet(filename)
-      raise Pier2::TooManySheetsError, "Too many sheets" if spreadsheet.sheets.length > 1
+      begin
+        spreadsheet = open_spreadsheet(filename)
+        raise Pier2::TooManySheetsError, "Too many sheets" if spreadsheet.sheets.length > 1
 
-      # Read the column names from the first row, then rename them based on the custom mapping
-      header = map_column_names(spreadsheet.row(1))
+        # Read the column names from the first row, then rename them based on the custom mapping
+        header = map_column_names(spreadsheet.row(1))
 
-      @errors = []
-      rows = []
-      failed = false
-      # Basic functionality copied from http://railscasts.com/episodes/396-importing-csv-and-excel
-      (2..spreadsheet.last_row).each do |i|
-        defaults = @default_column_values
-        row = Hash[[header, spreadsheet.row(i)].transpose]
-        row = defaults.merge(row)
-        @column_methods.each do |column|
-          row = row.merge(Hash.new(column, send(column(row))))
+        @errors = []
+        rows = []
+        failed = false
+        # Basic functionality copied from http://railscasts.com/episodes/396-importing-csv-and-excel
+        (2..spreadsheet.last_row).each do |i|
+          defaults = @default_column_values
+          row = Hash[[header, spreadsheet.row(i)].transpose]
+          row = defaults.merge(row)
+          @column_methods.each do |column|
+            row = row.merge(Hash.new(column, send(column(row))))
+          end
+          db_row = @ar_class.find_by_id(row["id"]) || @ar_class.new
+          db_row.attributes = row.to_hash.slice(*@ar_class.column_names)
+          if db_row.valid?
+            rows << db_row
+          else
+            failed=true
+            @errors << db_row.errors
+          end
         end
-        db_row = @ar_class.find_by_id(row["id"]) || @ar_class.new
-        db_row.attributes = row.to_hash.slice(*@ar_class.column_names)
-        if db_row.valid?
-          rows << db_row
+
+        if failed
+          pp @errors
         else
-          failed=true
-          @errors << db_row.errors
+          rows.each do |row|
+            row.save!
+          end
         end
+        return @errors
+      rescue Exception > e
+        Rails.logger.error(e.message)
+        Rails.logger.error(e.backtrace.join("\n"))
+        raise
       end
-
-      if failed
-        pp @errors
-      else
-        rows.each do |row|
-          row.save!
-        end
-      end
-      return @errors
     end
   end
 end
