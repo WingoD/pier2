@@ -77,6 +77,7 @@ module Pier2
       # Read the column names from the first row, then rename them based on the custom mapping
       header = map_column_names(spreadsheet.row(1))
 
+      failed = false
       # Basic functionality copied from http://railscasts.com/episodes/396-importing-csv-and-excel
       (2..spreadsheet.last_row).each do |i|
         defaults = @default_column_values
@@ -84,8 +85,15 @@ module Pier2
         row = defaults.merge(row)
         db_row = @ar_class.find_by_id(row["id"]) || @ar_class.new
         db_row.attributes = row.to_hash.slice(*@ar_class.column_names)
-        db_row.save!
+        if db_row.valid?
+          rows << db_row
+        else
+          failed=true
+        end
+      end
 
+      rows.each do |row|
+        row.save!
       end
     end
   end
