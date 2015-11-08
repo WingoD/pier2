@@ -9,6 +9,7 @@ module Pier2
       @id_column_name = "id"
       @required_column_names = []
       @protected_column_names = []
+      @column_methods = []
       @immutable_columms = []
       @ar_class = nil
       @column_name_mapping = {}
@@ -39,6 +40,10 @@ module Pier2
 
     def error_on_protected_columns(value)
       @error_on_protected_columns = value
+    end
+
+    def column_methods(value)
+      @column_methods = value
     end
 
     def overwrite_existing_records(value)
@@ -85,6 +90,9 @@ module Pier2
         defaults = @default_column_values
         row = Hash[[header, spreadsheet.row(i)].transpose]
         row = defaults.merge(row)
+        @column_methods.each do |column|
+          row = row.merge(Hash.new(column, send(column(row))))
+        end
         db_row = @ar_class.find_by_id(row["id"]) || @ar_class.new
         db_row.attributes = row.to_hash.slice(*@ar_class.column_names)
         if db_row.valid?
