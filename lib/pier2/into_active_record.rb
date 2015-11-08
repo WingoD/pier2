@@ -83,7 +83,6 @@ module Pier2
         row = Hash[[header, spreadsheet.row(i)].transpose]
         row = defaults.merge(row)
         db_row = @ar_class.find_by_id(row["id"]) || @ar_class.new
-        puts @ar_class.column_names
         db_row.attributes = row.to_hash.slice(*@ar_class.column_names)
         db_row.save!
 
