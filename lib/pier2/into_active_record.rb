@@ -92,7 +92,9 @@ module Pier2
           row = Hash[[header, spreadsheet.row(i)].transpose]
           row = defaults.merge(row)
           @column_methods.each do |column|
-            row = row.merge(Hash.new(column, send(column ,row)))
+            tmphash = {}
+            tmphash[column] = send(column ,row))
+            row = row.merge(tmphash)
           end
           db_row = @ar_class.find_by_id(row["id"]) || @ar_class.new
           db_row.attributes = row.to_hash.slice(*@ar_class.column_names)
