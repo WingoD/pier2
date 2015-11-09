@@ -100,7 +100,8 @@ module Pier2
               Rails.logger.error(e.message)
               Rails.logger.error(e.backtrace.join("\n"))
               failed=true
-              @errors << ActiveModel::Errors.new(self).add(column, "custom method failed")
+              raise
+              #@errors << ActiveModel::Errors.new(self).add(column, "custom method failed")
             end
             row = row.merge(tmphash)
           end
