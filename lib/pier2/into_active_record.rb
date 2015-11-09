@@ -97,6 +97,8 @@ module Pier2
             begin
               tmphash[column] = send(column ,row)
             rescue Exception => e
+              Rails.logger.error(column)
+              Rails.logger.error(row.pretty_inspect)
               Rails.logger.error(e.message)
               Rails.logger.error(e.backtrace.join("\n"))
               failed=true
