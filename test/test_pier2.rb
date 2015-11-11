@@ -56,8 +56,8 @@ class TestPier2 < Minitest::Test
 
   def test_magic_column_matching
     assert_equals("snake_case_rocks", ImportFruit.new.magic_column_match("SnakeCaseRocks")
-                  assert_equals("snake_case_rocks", ImportFruit.new.magic_column_match("SNAKE_CASE_rOCKs")
-                                assert_not_equal("snake_case_rocks", ImportFruit.new.magic_column_match("SNAKE_CASE_rOCK")
+    assert_equals("snake_case_rocks", ImportFruit.new.magic_column_match("SNAKE_CASE_rOCKs")
+    assert_not_equal("snake_case_rocks", ImportFruit.new.magic_column_match("SNAKE_CASE_rOCK")
   end
 
 end
