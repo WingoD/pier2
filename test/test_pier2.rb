@@ -23,6 +23,7 @@ class TestPier2 < Minitest::Test
       t.string "fruit"
       t.string "color"
       t.string "quantity"
+      t.string "snake_case_rocks"
     end
   end
 
@@ -51,5 +52,11 @@ class TestPier2 < Minitest::Test
     assert_raises(Pier2::TooManySheetsError) { ImportFruit.new.import_file("test/files/two-sheets.xlsx") }
     assert_raises(Pier2::TooManySheetsError) { ImportFruit.new.import_file("test/files/two-sheets.xls") }
     assert_raises(Pier2::TooManySheetsError) { ImportFruit.new.import_file("test/files/two-sheets.ods") }
+  end
+  
+  def test_magic_column_matching
+    assert_equals("snake_case_rocks", ImportFruit.new.column_header_to_column_name("SnakeCaseRocks")
+    assert_equals("snake_case_rocks", ImportFruit.new.column_header_to_column_name("SNAKE_CASE_rOCKs")
+    assert_not_equal("snake_case_rocks", ImportFruit.new.column_header_to_column_name("SNAKE_CASE_rOCK")
   end
 end

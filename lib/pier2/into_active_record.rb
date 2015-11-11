@@ -76,6 +76,13 @@ module Pier2
       end
     end
 
+    def column_header_to_column_name(column_header)
+      return column_header if @ar_class.column_names.include?(column_header)
+      return column_header.lower if @ar_class.column_names.include?(column_header.lower)
+      return column_name(column_header) if column_name(column_header) 
+      
+    end
+
     def import_file(filename)
       begin
         spreadsheet = open_spreadsheet(filename)
