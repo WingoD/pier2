@@ -90,7 +90,7 @@ module Pier2
         # Basic functionality copied from http://railscasts.com/episodes/396-importing-csv-and-excel
         (2..spreadsheet.last_row).each do |i|
           defaults = @default_column_values
-          row = Hash[[header, spreadsheet.row(i)].transpose]
+          row = Hash[[header, spreadsheet.row(i).map{|x| x.strip}].transpose]
           row = defaults.merge(row)
           @column_methods.each do |column|
             tmphash = {}
