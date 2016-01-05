@@ -76,7 +76,7 @@ module Pier2
       end
     end
 
-    def import_file(filename)
+    def import_file(filename, batch_id)
       begin
         spreadsheet = open_spreadsheet(filename)
         raise Pier2::TooManySheetsError, "Too many sheets" if spreadsheet.sheets.length > 1
@@ -90,7 +90,7 @@ module Pier2
         # Basic functionality copied from http://railscasts.com/episodes/396-importing-csv-and-excel
         (2..spreadsheet.last_row).each do |i|
           defaults = @default_column_values
-          row = Hash[[header, spreadsheet.row(i).map{|x| x.strip}].transpose]
+          row = Hash[[header, spreadsheet.row(i).map{|x| x ? x.strip : ""}].transpose]
           row = defaults.merge(row)
           @column_methods.each do |column|
             tmphash = {}
@@ -109,6 +109,7 @@ module Pier2
           end
           db_row = @ar_class.find_by_id(row["id"]) || @ar_class.new
           db_row.attributes = row.to_hash.slice(*@ar_class.column_names)
+          db_row.batch_id = batch_id
           if db_row.valid?
             rows << db_row
           else
