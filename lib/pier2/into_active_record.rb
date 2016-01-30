@@ -76,8 +76,9 @@ module Pier2
       end
     end
 
-    def import_file(filename, batch_id)
+    def import_file(filename, batch_id, current_user=nil)
       begin
+        @current_user = current_user
         spreadsheet = open_spreadsheet(filename)
         raise Pier2::TooManySheetsError, "Too many sheets" if spreadsheet.sheets.length > 1
 
