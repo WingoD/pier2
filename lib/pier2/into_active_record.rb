@@ -96,7 +96,7 @@ module Pier2
           @column_methods.each do |column|
             tmphash = {}
             begin
-              tmphash[column] = send(column ,row)
+              tmphash[column] = send(column, row)
             rescue Exception => e
               Rails.logger.error(column)
               Rails.logger.error(row.pretty_inspect)
@@ -112,7 +112,7 @@ module Pier2
           db_row.attributes = row.to_hash.slice(*@ar_class.column_names)
           db_row.batch_id = batch_id
           if db_row.valid?
-            rows << db_row
+            rows << [db_row, row]
           else
             failed=true
             @errors << db_row.errors
@@ -122,8 +122,8 @@ module Pier2
         if failed
           pp @errors
         else
-          rows.each do |row|
-            row.save!
+          rows.each do |pair|
+            save_and_beyond(pair)
           end
         end
         return @errors
@@ -132,6 +132,16 @@ module Pier2
         Rails.logger.error(e.backtrace.join("\n"))
         raise
       end
+    end
+
+    def beyond(db_row, row)
+    end
+
+    def save_and_beyond(pair)
+      db_row, row  = *pair
+      db_row.save!
+      beyond(db_row, row)
+      db_row.save!
     end
   end
 end
